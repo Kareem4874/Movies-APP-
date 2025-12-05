@@ -1,4 +1,4 @@
-# 🎬 Netflix Frontend - Movie Discovery Platform
+# 🎬 TMDB Frontend - Movie Discovery Platform
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -27,7 +27,7 @@ A **production-ready**, **secure**, and **high-performance** movie and TV show d
 
 ## 🎯 Overview
 
-Netflix Frontend demonstrates how to build a Netflix-quality experience using modern web technologies with a **secure, hybrid architecture** that protects API keys while maintaining excellent performance.
+TMDB Frontend demonstrates how to build a TMDB-quality experience using modern web technologies with a **secure, hybrid architecture** that protects API keys while maintaining excellent performance.
 
 ### Core Objectives
 
