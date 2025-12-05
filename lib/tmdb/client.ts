@@ -26,13 +26,16 @@ export async function fetchTMDB<T>(
   let url: string;
   
   if (typeof window === 'undefined') {
-    // Server-side: use absolute URL pointing at this app instance.
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    const apiBase = TMDB_CONFIG.API_BASE.startsWith('/')
-      ? TMDB_CONFIG.API_BASE.slice(1)
-      : TMDB_CONFIG.API_BASE;
-    url = `${cleanBase}/${apiBase}/${endpoint}${queryString ? `?${queryString}` : ''}`;
+    // Server-side: call TMDB API directly to avoid depending on localhost during build.
+    const tmdbBase = process.env.TMDB_API_BASE_URL || 'https://api.themoviedb.org/3';
+    const cleanBase = tmdbBase.endsWith('/') ? tmdbBase.slice(0, -1) : tmdbBase;
+    const searchParams = new URLSearchParams(queryString);
+    const apiKey = process.env.TMDB_API_KEY;
+    if (apiKey) {
+      searchParams.set('api_key', apiKey);
+    }
+    const finalQuery = searchParams.toString();
+    url = `${cleanBase}/${endpoint}${finalQuery ? `?${finalQuery}` : ''}`;
   } else {
     // Client-side: use relative URL
     const base = TMDB_CONFIG.API_BASE.replace(/\/+$/, '');

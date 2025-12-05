@@ -1,5 +1,3 @@
-// app/layout.tsx
-import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -15,7 +13,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: {
     default: 'TMDB Movies - Discover & Explore',
     template: '%s | TMDB Movies'
@@ -35,16 +33,18 @@ export const metadata: Metadata = {
     title: 'TMDB Movies',
     description: 'Discover trending movies and top-rated films',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#020617' },
-  ],
 };
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
+export const themeColor = [
+  { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+  { media: '(prefers-color-scheme: dark)', color: '#020617' },
+];
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -54,7 +54,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={inter.variable}
     >
       <head>
-        {/* existing script + meta */}
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icons/icon-192.png" />
         <meta name="theme-color" content="#000000" />
@@ -62,17 +61,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="font-sans antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
         <ServiceWorkerRegister />
         <ThemeProvider>
-          {/* Header with fixed positioning */}
           <Header />
           <SkipToContent />
-          {/* Main content with proper spacing */}
           <main className="min-h-screen pt-16 sm:pt-20">
-            <div className="relative">
-              {children}
-            </div>
+            <div className="relative">{children}</div>
           </main>
-
-          {/* Footer */}
           <Footer />
         </ThemeProvider>
       </body>
