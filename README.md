@@ -1619,3 +1619,4 @@ SOFTWARE.
 [Report Bug](https://github.com/your-username/netflix-frontend/issues) · [Request Feature](https://github.com/your-username/netflix-frontend/issues) · [View Demo](https://netflix-frontend.vercel.app)
 
 </div>"# Movies-APP" 
+"# Movies-APP-" 
