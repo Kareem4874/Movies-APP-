@@ -13,7 +13,13 @@ export const metadata = {
 
 export default async function SearchPage() {
   // Fetch genres from the server
-  const genresData = await getMovieGenres();
+  let genresData;
+  try {
+    genresData = await getMovieGenres();
+  } catch (error) {
+    console.error('Failed to load genres during build:', error);
+    genresData = { genres: [] };
+  }
 
   return (
     <main className="container mx-auto px-4 py-8 min-h-screen">

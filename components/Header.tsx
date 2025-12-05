@@ -5,10 +5,10 @@ import { Film, Search, Home, TrendingUp, Star, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
-  const [pathname, setPathname] = useState('/');
+  const [pathname, setPathname] = useState<string>('/');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isActive = (path) => pathname === path;
+  const isActive = (path: string) => pathname === path;
 
   const navLinks = [
     { href: '/', label: 'Home', icon: Home },
@@ -27,7 +27,7 @@ export default function Header() {
             href="/"
             onClick={() => setPathname('/')} 
             className="flex items-center gap-2 sm:gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-lg px-2 py-1"
-            aria-label="TMDB Movies - Home Page"
+            aria-label="Movies App home"
           >
             <div className="relative">
               <Film className="w-8 h-8 sm:w-10 sm:h-10 text-red-600 group-hover:text-red-500 transition-colors drop-shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
@@ -46,7 +46,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav 
             className="hidden md:flex items-center gap-1 lg:gap-2"
-            aria-label="Main navigation"
+            aria-label="Primary navigation"
           >
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -96,7 +96,7 @@ export default function Header() {
         {mobileMenuOpen && (
           <nav 
             className="md:hidden py-4 border-t border-slate-800/50"
-            aria-label="Mobile navigation"
+            aria-label="Primary navigation"
           >
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => {

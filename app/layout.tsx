@@ -6,6 +6,8 @@ import './globals.css';
 import Header from '@/components/Header';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import Footer from '@/components/Footer';
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
+import { SkipToContent } from '@/components/SkipToContent';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -51,11 +53,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
       className={inter.variable}
     >
+      <head>
+        {/* existing script + meta */}
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icons/icon-192.png" />
+        <meta name="theme-color" content="#000000" />
+      </head>
       <body className="font-sans antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+        <ServiceWorkerRegister />
         <ThemeProvider>
           {/* Header with fixed positioning */}
           <Header />
-          
+          <SkipToContent />
           {/* Main content with proper spacing */}
           <main className="min-h-screen pt-16 sm:pt-20">
             <div className="relative">

@@ -49,6 +49,7 @@ function MovieCard({ movie, priority }: { movie: Movie; priority: boolean }) {
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
             className="object-cover transition-transform duration-500 group-hover:scale-110"
             priority={priority}
+            loading={priority ? 'eager' : 'lazy'}
           />
           
           {/* Gradient Overlay */}

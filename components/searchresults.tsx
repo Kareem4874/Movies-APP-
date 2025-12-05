@@ -6,14 +6,7 @@ import { useAppStore } from '@/lib/store';
 import { useCachedData } from '@/hooks/usecacheddata';
 import { MovieGrid } from '@/components/moviegrid';
 import { buildDiscoverParams } from '@/lib/url';
-
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string | null;
-  release_date: string;
-  vote_average: number;
-}
+import type { Movie } from '@/types/tmdb';
 
 interface SearchResponse {
   page: number;
@@ -188,7 +181,7 @@ export function SearchResults() {
     return (
       <div className="mt-8 text-center">
         <p className="text-gray-400 text-lg">
-          No results found for "{searchQuery}"
+          No results found for &quot;{searchQuery}&quot;
         </p>
         <p className="text-gray-500 text-sm mt-2">
           Try changing the filters or using different search terms.

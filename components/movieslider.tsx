@@ -2,15 +2,21 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { MovieCard } from './moviecard';
 import type { Movie } from '@/types/tmdb';
 
 interface MovieSliderProps {
   movies: Movie[];
-  showProgress?: boolean;
 }
 
-export function MovieSlider({ movies, showProgress = false }: MovieSliderProps) {
+export function MovieSlider({ movies }: MovieSliderProps) {
+  const router = useRouter();
+
+  const handleSelect = (id: number) => {
+    router.push(`/movies/${id}`);
+  };
+
   return (
     <div className="relative group/slider">
       <button 
@@ -34,7 +40,7 @@ export function MovieSlider({ movies, showProgress = false }: MovieSliderProps) 
                 animation: `fadeInUp 0.5s ease-out ${index * 0.05}s both`
               }}
             >
-              <MovieCard movie={movie} showProgress={showProgress} />
+              <MovieCard movie={movie} onSelect={handleSelect} />
             </div>
           ))}
         </div>

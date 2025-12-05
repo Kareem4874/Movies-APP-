@@ -1,6 +1,5 @@
 // lib/rate-limiter.ts
 
-import { LRUCache } from 'lru-cache';
 
 /**
  * Rate limiter configuration
@@ -19,14 +18,10 @@ interface RateLimitEntry {
 }
 
 /**
- * LRU Cache for storing request counts per IP
- * - Automatically evicts old entries
- * - Memory efficient
+ * In-memory cache for storing request counts per IP.
+ * Uses a simple Map with per-entry TTL.
  */
-const rateLimitCache = new LRUCache<string, RateLimitEntry>({
-  max: 500,  // Store up to 500 unique IPs
-  ttl: 60000, // 1 minute TTL (time to live)
-});
+const rateLimitCache = new Map<string, RateLimitEntry>();
 
 /**
  * Default rate limit configuration

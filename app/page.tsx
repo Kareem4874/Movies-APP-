@@ -1,11 +1,15 @@
 // app/page.tsx
 import Link from 'next/link';
-import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { Suspense, type ElementType } from 'react';
 import { getPopularMovies, getTrendingMovies, getTopRatedMovies } from '@/lib/tmdb/movies';
-import { MovieGrid } from '@/components/moviegrid';
 import { SkeletonGrid } from '@/components/skeletongrid';
 // import { HeroSection } from '@/components/HeroSection';
-import { Play, TrendingUp, Star, Trophy, ArrowRight } from 'lucide-react';
+import { TrendingUp, Star, Trophy, ArrowRight } from 'lucide-react';
+
+const MovieGrid = dynamic(() => import('@/components/moviegrid').then((m) => m.MovieGrid), {
+  loading: () => null,
+});
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -75,7 +79,13 @@ export default function HomePage() {
  * Server Component - Trending Movies
  */
 async function TrendingSection() {
-  const data = await getTrendingMovies('day');
+  let data;
+  try {
+    data = await getTrendingMovies('day');
+  } catch (error) {
+    console.error('Failed to load trending movies during build:', error);
+    data = { results: [] };
+  }
   
   return (
     <div className="space-y-6">
@@ -94,7 +104,13 @@ async function TrendingSection() {
  * Server Component - Popular Movies
  */
 async function PopularSection() {
-  const data = await getPopularMovies();
+  let data;
+  try {
+    data = await getPopularMovies();
+  } catch (error) {
+    console.error('Failed to load popular movies during build:', error);
+    data = { results: [] };
+  }
   
   return (
     <div className="space-y-6">
@@ -113,7 +129,13 @@ async function PopularSection() {
  * Server Component - Top Rated
  */
 async function TopRatedSection() {
-  const data = await getTopRatedMovies();
+  let data;
+  try {
+    data = await getTopRatedMovies();
+  } catch (error) {
+    console.error('Failed to load top rated movies during build:', error);
+    data = { results: [] };
+  }
   
   return (
     <div className="space-y-6">
@@ -131,16 +153,16 @@ async function TopRatedSection() {
 /**
  * Section Header Component
  */
-function SectionHeader({ 
-  icon: Icon, 
-  title, 
-  subtitle, 
-  href 
-}: { 
-  icon: any; 
-  title: string; 
-  subtitle: string; 
-  href: string; 
+function SectionHeader({
+  icon: Icon,
+  title,
+  subtitle,
+  href,
+}: {
+  icon: ElementType;
+  title: string;
+  subtitle: string;
+  href: string;
 }) {
   return (
     <div className="flex items-center justify-between">

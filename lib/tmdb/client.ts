@@ -26,16 +26,17 @@ export async function fetchTMDB<T>(
   let url: string;
   
   if (typeof window === 'undefined') {
-    // Server-side: ensure absolute URL
+    // Server-side: use absolute URL pointing at this app instance.
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    // Ensure baseUrl doesn't end with a slash to avoid double slashes
     const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    // Ensure API_BASE doesn't start with a slash to avoid double slashes
-    const cleanApiBase = TMDB_CONFIG.API_BASE.startsWith('/') ? TMDB_CONFIG.API_BASE.slice(1) : TMDB_CONFIG.API_BASE;
-    url = `${cleanBase}/${cleanApiBase}/${endpoint}${queryString ? `?${queryString}` : ''}`;
+    const apiBase = TMDB_CONFIG.API_BASE.startsWith('/')
+      ? TMDB_CONFIG.API_BASE.slice(1)
+      : TMDB_CONFIG.API_BASE;
+    url = `${cleanBase}/${apiBase}/${endpoint}${queryString ? `?${queryString}` : ''}`;
   } else {
     // Client-side: use relative URL
-    url = `${TMDB_CONFIG.API_BASE}/${endpoint}${queryString ? `?${queryString}` : ''}`;
+    const base = TMDB_CONFIG.API_BASE.replace(/\/+$/, '');
+    url = `${base}/${endpoint}${queryString ? `?${queryString}` : ''}`;
   }
   
   console.log(`[fetchTMDB] Fetching URL: ${url}`);

@@ -1,7 +1,7 @@
 // components/Filters.tsx
 'use client';
 
-import { useAppStore } from '@/lib/store';
+import { useAppStore, type SortOption } from '@/lib/store';
 
 // TMDB Genre type
 interface Genre {
@@ -93,8 +93,8 @@ export function Filters({ genres }: FiltersProps) {
         <select
           id="sort-filter"
           value={filters.sortBy}
-          onChange={(e) => 
-            updateFilters({ sortBy: e.target.value as any })
+          onChange={(e) =>
+            updateFilters({ sortBy: e.target.value as SortOption })
           }
           className="bg-gray-900/70 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-red-600"
         >

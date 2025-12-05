@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 
-import { MovieGrid } from '@/components/moviegrid';
+const MovieGrid = dynamic(() => import('@/components/moviegrid').then((m) => m.MovieGrid), {
+  loading: () => null,
+});
 import { getBackdropURL, getPosterURL } from '@/lib/tmdb/config';
 import {
   getMovieDetails,
@@ -16,10 +18,13 @@ import {
   getMovieWatchProviders,
 } from '@/lib/tmdb/movies';
 import type {
+  Movie,
   Video,
   ReleaseDatesResponse,
   WatchProvidersResponse,
   WatchProviderOption,
+  Review,
+  Translation,
 } from '@/types/tmdb';
 
 // ============= Constants =============
@@ -35,6 +40,32 @@ const MAX_RECOMMENDED = 10;
 type MovieRouteParams = { id: string };
 interface MoviePageProps {
   params: MovieRouteParams | Promise<MovieRouteParams>;
+}
+type HeroReleaseInfo = ReturnType<typeof pickRegionalRelease> | null;
+
+interface HeroSectionProps {
+  backdropUrl: string | null;
+  title: string;
+  posterUrl: string | null;
+  tagline: string | null;
+  infoChips: string[];
+  overview: string;
+  genres: { id: number; name: string }[];
+  originalLanguage: string;
+  budget: string | null;
+  revenue: string | null;
+  releaseInfo: HeroReleaseInfo;
+  formattedReleaseDate: string | null;
+}
+
+interface ProviderSection {
+  label: string;
+  providers: WatchProviderOption[];
+}
+
+interface ProviderSummary {
+  link: string;
+  sections: ProviderSection[];
 }
 
 // ============= Utility Functions =============
@@ -96,7 +127,10 @@ function formatCurrency(value?: number | null): string | null {
   }).format(value);
 }
 
-function summarizeProviders(data?: WatchProvidersResponse | null, region = DEFAULT_REGION) {
+function summarizeProviders(
+  data?: WatchProvidersResponse | null,
+  region = DEFAULT_REGION,
+): ProviderSummary | null {
   const entry = data?.results?.[region];
   if (!entry) return null;
 
@@ -238,7 +272,7 @@ function HeroSection({
   revenue,
   releaseInfo,
   formattedReleaseDate,
-}: any) {
+}: HeroSectionProps) {
   return (
     <>
       {/* Backdrop */}
@@ -248,9 +282,9 @@ function HeroSection({
             src={backdropUrl}
             alt={`${title} backdrop`}
             fill
-            priority
             className="object-cover"
             sizes="100vw"
+            loading="eager"
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
@@ -270,7 +304,7 @@ function HeroSection({
                     fill
                     sizes="(max-width: 768px) 128px, (max-width: 1024px) 192px, 256px"
                     className="object-cover"
-                    priority
+                    loading="eager"
                   />
                 </div>
               </div>
@@ -313,7 +347,7 @@ function HeroSection({
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm">
                 <DetailCard label="Genres">
-                  {genres.length > 0 ? genres.map((g: any) => g.name).join(', ') : 'Uncategorized'}
+                  {genres.length > 0 ? genres.map((g) => g.name).join(', ') : 'Uncategorized'}
                 </DetailCard>
                 <DetailCard label="Language">
                   <span className="capitalize">{originalLanguage}</span>
@@ -409,9 +443,9 @@ function TrailerSection({ trailer, movieTitle }: { trailer: Video | null; movieT
   );
 }
 
-function WatchProvidersSection({ providerSummary }: any) {
+function WatchProvidersSection({ providerSummary }: { providerSummary: ProviderSummary | null }) {
   return (
-    <Section
+        <Section
       title="Where to Watch"
       action={
         providerSummary?.link && (
@@ -428,11 +462,11 @@ function WatchProvidersSection({ providerSummary }: any) {
     >
       {providerSummary?.sections.length ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-          {providerSummary.sections.map((section: any) => (
+          {providerSummary.sections.map((section) => (
             <div key={section.label} className="rounded-lg md:rounded-xl border border-white/10 p-4 bg-white/5 backdrop-blur-sm">
               <p className="text-gray-300 font-semibold mb-3 text-sm md:text-base">{section.label}</p>
               <div className="flex flex-wrap gap-2">
-                {section.providers.map((provider: any) => (
+                {section.providers.map((provider) => (
                   <span
                     key={provider.provider_id}
                     className="px-2 md:px-3 py-1 rounded-full border border-white/20 text-xs md:text-sm bg-white/5"
@@ -453,12 +487,12 @@ function WatchProvidersSection({ providerSummary }: any) {
   );
 }
 
-function ReviewsSection({ reviews }: any) {
+function ReviewsSection({ reviews }: { reviews: Review[] }) {
   return (
     <Section title="Featured Reviews">
       {reviews.length ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {reviews.map((review: any) => (
+          {reviews.map((review) => (
             <article
               key={review.id}
               className="rounded-lg md:rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 flex flex-col gap-3"
@@ -488,7 +522,13 @@ function ReviewsSection({ reviews }: any) {
   );
 }
 
-function SimilarMoviesSection({ movies, totalResults }: any) {
+function SimilarMoviesSection({
+  movies,
+  totalResults,
+}: {
+  movies: Movie[];
+  totalResults?: number;
+}) {
   return (
     <Section title="Similar Titles" subtitle={`${totalResults ?? movies.length} result(s)`}>
       {movies.length ? <MovieGrid movies={movies} /> : <EmptyState>No similar movies found at the moment.</EmptyState>}
@@ -496,17 +536,19 @@ function SimilarMoviesSection({ movies, totalResults }: any) {
   );
 }
 
-function TranslationsSection({ translations }: any) {
+function TranslationsSection({ translations }: { translations: Translation[] }) {
   return (
     <Section title="Translations">
       {translations.length ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-          {translations.map((t: any) => (
+          {translations.map((t) => (
             <div key={`${t.iso_3166_1}-${t.iso_639_1}`} className="rounded-lg md:rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4">
               <p className="font-semibold text-sm md:text-base">{t.english_name}</p>
               <p className="text-xs md:text-sm text-gray-400">{t.name} • {t.iso_3166_1}</p>
               {t.data.tagline && (
-                <p className="text-xs md:text-sm text-white/80 mt-2 italic line-clamp-2">"{t.data.tagline}"</p>
+                <p className="text-xs md:text-sm text-white/80 mt-2 italic line-clamp-2">
+                  “{t.data.tagline}”
+                </p>
               )}
             </div>
           ))}
@@ -518,7 +560,13 @@ function TranslationsSection({ translations }: any) {
   );
 }
 
-function RecommendationsSection({ movies, totalResults }: any) {
+function RecommendationsSection({
+  movies,
+  totalResults,
+}: {
+  movies: Movie[];
+  totalResults?: number;
+}) {
   return (
     <Section title="You Might Also Like" subtitle={`${totalResults ?? movies.length} recommendation(s)`}>
       {movies.length ? <MovieGrid movies={movies} /> : <EmptyState>No related titles found at the moment.</EmptyState>}

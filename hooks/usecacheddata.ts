@@ -65,9 +65,11 @@ export function useCachedData<T>(
           };
           window.localStorage.setItem(key, JSON.stringify(entry));
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
-          setError(err?.message || 'Failed to load data');
+          const message =
+            err instanceof Error ? err.message : 'Failed to load data';
+          setError(message);
         }
       } finally {
         if (!cancelled) {
